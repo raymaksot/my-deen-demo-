@@ -44,7 +44,7 @@ export default {
       eas: {
         projectId: "00000000-0000-0000-0000-000000000000"
       },
-      backendBaseUrl: process.env.BACKEND_BASE_URL,
+  backendBaseUrl: "http://192.168.18.5:3000",
       googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
       googleAndroidClientId: process.env.GOOGLE_ANDROID_CLIENT_ID,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,

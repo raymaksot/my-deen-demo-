@@ -45,7 +45,7 @@ export default function TasbeehCounterScreen() {
 					<PrimaryButton
 						title="Reset"
 						onPress={resetCounter}
-						style={[styles.resetButton, { backgroundColor: colors.muted }]}
+						style={Object.assign({}, styles.resetButton, { backgroundColor: colors.muted })}
 						textStyle={styles.buttonText}
 					/>
 				</View>
@@ -57,7 +57,7 @@ export default function TasbeehCounterScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#fff',
+		backgroundColor: '#fff' || '#FFFFFF',
 	},
 	headerRow: {
 		flexDirection: 'row',

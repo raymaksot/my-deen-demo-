@@ -1,150 +1,153 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-  Switch,
-  ScrollView,
-} from 'react-native';
+import Theme, { useThemeConfig } from '../../theme/theme';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Switch } from 'react-native';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setThemeMode } from '@/store/preferencesSlice';
 import { logout } from '@/store/authSlice';
+
+const settings = [
+  { id: 1, label: 'Account Preferences', icon: '👤' },
+  { id: 2, label: 'My Location', icon: '📍' },
+  { id: 3, label: 'Language', icon: '🌐' },
+  { id: 4, label: 'Dark Mode', icon: '🌙', switch: true },
+];
+const other = [
+  { id: 5, label: 'Contact Support', icon: '💬' },
+  { id: 6, label: 'Logout', icon: '🚪', danger: true },
+];
 
 /**
  * ProfileScreen shows the logged‑in user’s information and provides links to
  * account settings such as editing the profile, changing language, selecting
  * location and toggling dark mode.  A logout option is also provided.
  */
-export default function ProfileScreen() {
+function ProfileScreen() {
   const navigation = useNavigation<any>();
   const user = useAppSelector((s) => s.auth.user);
   const prefs = useAppSelector((s) => s.preferences);
   const dispatch = useAppDispatch();
+  const { palette } = useThemeConfig();
+  const [darkMode, setDarkMode] = useState(prefs.themeMode === 'dark');
 
   function toggleTheme() {
-    dispatch(setThemeMode(prefs.themeMode === 'dark' ? 'light' : 'dark'));
+    setDarkMode((prev) => !prev);
+    dispatch(setThemeMode(darkMode ? 'light' : 'dark'));
   }
 
+  const styles = getStyles(palette);
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }}>
-      {/* Hero header */}
-      <ImageBackground
-        source={require('../../../assets/homepage.png')}
-        style={styles.hero}
-        resizeMode="cover"
-      >
-        <Text style={styles.heroTitle}>Profile</Text>
-      </ImageBackground>
-      {/* User card */}
-      <View style={styles.card}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image
-            source={require('../../../assets/onboarding.png')}
-            style={styles.avatar}
-          />
-          <View style={{ marginLeft: 12 }}>
-            <Text style={styles.cardName}>{user?.name || 'Guest'}</Text>
-            <Text style={styles.cardEmail}>{user?.email}</Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('EditProfile')}
-          style={styles.editBtn}
-        >
-          <Text style={{ fontSize: 16 }}>✎</Text>
+    <View style={styles.container}>
+      {/* Banner */}
+      <View style={styles.banner}>
+  <Image source={require('../../../assets/homepage.png')} style={styles.bannerImage} />
+        <View style={styles.bannerOverlay} />
+        <TouchableOpacity style={styles.settingsBtn}>
+          <Text style={[Theme.typography.h4, { color: palette.surface }]}>⚙️</Text>
         </TouchableOpacity>
+        <View style={styles.profileCard}>
+          <Image source={require('../../../assets/signin_dark.png')} style={styles.avatar} />
+          <View style={{ flex: 1 }}>
+            <Text style={[Theme.typography.h5, { color: palette.surface }]}>{user?.name || 'Guest'}</Text>
+            <Text style={[Theme.typography.label, { color: palette.surface }]}>{user?.email}</Text>
+          </View>
+          <TouchableOpacity style={styles.editBtn}><Text style={[Theme.typography.h4, { color: palette.surface }]}>✎</Text></TouchableOpacity>
+        </View>
       </View>
-      {/* Account settings */}
-      <Text style={styles.sectionHeader}>Account Settings</Text>
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => navigation.navigate('MyEvents')}
-      >
-        <Text style={styles.listText}>My Events</Text>
-        <Text style={styles.listArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => navigation.navigate('Settings')}
-      >
-        <Text style={styles.listText}>Account Preferences</Text>
-        <Text style={styles.listArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => navigation.navigate('MyLocation')}
-      >
-        <Text style={styles.listText}>My Location</Text>
-        <Text style={styles.listArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => navigation.navigate('Language')}
-      >
-        <Text style={styles.listText}>Language</Text>
-        <Text style={styles.listArrow}>›</Text>
-      </TouchableOpacity>
-      <View style={[styles.listItem, { justifyContent: 'space-between' }]}>
-        <Text style={styles.listText}>Dark Mode</Text>
-        <Switch
-          value={prefs.themeMode === 'dark'}
-          onValueChange={toggleTheme}
-          trackColor={{ false: '#e5e7eb', true: '#0E7490' }}
-          thumbColor="#fff"
-        />
-      </View>
-      {/* Other */}
-      <Text style={styles.sectionHeader}>Other</Text>
-      <TouchableOpacity style={styles.listItem} onPress={() => { /* TODO: contact support */ }}>
-        <Text style={styles.listText}>Contact Support</Text>
-        <Text style={styles.listArrow}>›</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.listItem, { borderColor: 'transparent' }]}
-        onPress={() => dispatch(logout())}
-      >
-        <Text style={[styles.listText, { color: '#DC2626' }]}>Logout</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      {/* Settings List */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
+        <Text style={[Theme.typography.label, { color: palette.text, marginHorizontal: 16, marginTop: 24 }]}>Account Settings</Text>
+        {settings.map((s) => (
+          <View key={s.id} style={styles.settingRow}>
+            <Text style={[Theme.typography.h5, { marginRight: 12 }]}>{s.icon}</Text>
+            <Text style={[Theme.typography.h5, { flex: 1, color: palette.text }]}>{s.label}</Text>
+            {s.switch ? (
+              <Switch value={darkMode} onValueChange={toggleTheme} trackColor={{ false: palette.surface, true: palette.primary }} thumbColor={darkMode ? palette.surface : palette.secondary} />
+            ) : null}
+          </View>
+        ))}
+        <Text style={[Theme.typography.label, { color: palette.text, marginHorizontal: 16, marginTop: 24 }]}>Other</Text>
+        {other.map((o) => (
+          <View key={o.id} style={[styles.settingRow, o.danger && { borderColor: palette.error, borderWidth: 1 }] }>
+            <Text style={[Theme.typography.h5, { marginRight: 12, color: o.danger ? palette.error : palette.text }]}>{o.icon}</Text>
+            <Text style={[Theme.typography.h5, { flex: 1, color: o.danger ? palette.error : palette.text }]}>{o.label}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  hero: { height: 140, justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: 16 },
-  heroTitle: { color: '#fff', fontSize: 24, fontWeight: '700' },
-  card: {
-    backgroundColor: '#0F172A',
+export default ProfileScreen;
+
+function getStyles(palette: any) {
+  return StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: palette.background || '#FFFFFF',
+  },
+  banner: {
+    height: 180,
+    position: 'relative',
+    justifyContent: 'flex-end',
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    resizeMode: 'cover',
+  },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  settingsBtn: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    zIndex: 2,
+  },
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: palette.surface,
     borderRadius: 16,
-    marginHorizontal: 16,
-    marginTop: -40,
     padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginHorizontal: 16,
+    marginBottom: -32,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    zIndex: 3,
   },
-  avatar: { width: 60, height: 60, borderRadius: 30 },
-  cardName: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  cardEmail: { color: '#CBD5E1', fontSize: 12, marginTop: 4 },
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 12,
+    resizeMode: 'cover',
+  },
   editBtn: {
-    backgroundColor: '#0E7490',
-    padding: 8,
-    borderRadius: 20,
+    marginLeft: 12,
   },
-  sectionHeader: { marginTop: 24, marginHorizontal: 16, fontSize: 16, fontWeight: '700', color: '#111827' },
-  listItem: {
+  settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderColor: '#E5E7EB',
+    backgroundColor: palette.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  listText: { fontSize: 16, color: '#111827' },
-  listArrow: { fontSize: 20, color: '#9CA3AF' },
-});
+  });
+}

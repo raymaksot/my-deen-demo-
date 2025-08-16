@@ -15,6 +15,7 @@ import { useAppSelector } from '@/store/hooks';
 import { schedulePrayerNotifications, scheduleDailyContentNotification } from '@/services/athan';
 import { useThemeColors } from '@/theme/theme';
 import DailyContent from '@/components/DailyContent';
+import { Theme } from '@/theme/theme';
 
 export default function HomeScreen() {
 	const navigation = useNavigation<any>();
@@ -24,9 +25,9 @@ export default function HomeScreen() {
 	const calcMethod = useAppSelector((s) => s.preferences.prayer.calculationMethod);
 	const [syncing, setSyncing] = useState(false);
 
-	// Pull colours from theme.  We'll build styles from these colours.
-	const colors = useThemeColors();
-	const styles = React.useMemo(() => createStyles(colors), [colors]);
+  // Получаем цвета из темы. Стили строим на их основе.
+  const colors = useThemeColors();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
 
 	useEffect(() => {
 		(async () => {
@@ -88,7 +89,7 @@ export default function HomeScreen() {
         {
             id: 'a2',
             category: 'Historical',
-            title: 'Biography of Abdullah bin Umar radhiyallahu \"anhu',
+            title: 'Biography of Abdullah bin Umar radhiyallahu "anhu',
             author: 'Muhammad Faqih',
             image: require('../../../assets/onboarding.png'),
         },
@@ -107,114 +108,70 @@ export default function HomeScreen() {
     ];
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
-            {/* Hero / greeting */}
-            <ImageBackground
-                // Use a generic background for hero.  In a real app you would swap
-                // this image for a light or dark variant.  For demonstration we
-                // reuse onboarding.png, but you could import a dark‑specific file.
-                source={colors.background === '#0B1220' ? require('../../../assets/homepage_dark.png') : require('../../../assets/homepage.png')}
-                style={styles.hero}
-                resizeMode="cover"
-            >
-                <View style={styles.heroOverlay} />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16 }}>
-                    <View>
-                        <Text style={{ color: '#fff', fontSize: 14 }}>Assalamu'alaikum</Text>
-                        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>Fatimah Jaber</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-                        <Text style={{ color: '#fff', fontSize: 20 }}>🔔</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* Next prayer card */}
-                <View style={styles.nextPrayerCard}>
-                    <View>
-                        <Text style={{ color: '#fff', fontSize: 12 }}>Next prayer is Dhuhr</Text>
-                        <Text style={{ color: '#fff', fontSize: 24, fontWeight: '700' }}>{times ? times.dhuhr : '--:--'} {times ? (new Date().getHours() >= 12 ? 'PM' : 'AM') : ''}</Text>
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('FindQibla')}
-                        style={styles.findQiblaBtn}
-                    >
-                        <Text style={{ color: colors.background === '#0B1220' ? '#fff' : '#0E7490', fontSize: 12, fontWeight: '600' }}>Find Qibla</Text>
-                    </TouchableOpacity>
-                </View>
-            </ImageBackground>
-
-            {/* Daily Content Section */}
-            <DailyContent />
-
-            {/* Featured Cult Section */}
-            <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-                <View style={styles.rowBetween}>
-                    <Text style={styles.sectionTitle}>Featured Cult</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Videos')}><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
-                </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
-                    {videos.map((v) => (
-                        <TouchableOpacity
-                            key={v.id}
-                            style={{ width: 200, marginRight: 16 }}
-                            onPress={() => navigation.navigate('VideoDetail', { video: v })}
-                        >
-                            <View style={{ position: 'relative' }}>
-                                <Image source={v.thumbnail} style={{ width: '100%', height: 120, borderRadius: 16, resizeMode: 'cover' }} />
-                                <View style={{ position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
-                                    <Text style={{ color: '#fff', fontSize: 10 }}>{v.duration}</Text>
-                                </View>
-                            </View>
-                            <Text style={{ fontSize: 14, fontWeight: '600', marginTop: 8 }}>{v.title}</Text>
-                            <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>By {v.author}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+        {/* Header с фоном и приветствием */}
+        <ImageBackground source={require('../../../assets/homepage.png')} style={styles.headerBg}>
+          <View style={styles.headerOverlay}>
+            <Text style={[Theme.typography.label, { color: colors.background }]}>Assalamu'alaikum</Text>
+            <Text style={[Theme.typography.h4, { color: colors.background, marginBottom: 8 }]}>Fatimah Jaber</Text>
+            {/* Иконка уведомлений и аватар */}
+            <View style={styles.headerIcons}>
+              {/* TODO: добавить иконку уведомлений и аватар через Theme.elements.Icon */}
             </View>
-
-            {/* Latest Article Section */}
-            <View style={{ paddingHorizontal: 16, marginTop: 32 }}>
-                <View style={styles.rowBetween}>
-                    <Text style={styles.sectionTitle}>Latest Article</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Articles')}><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
-                </View>
-                {articles.map((a) => (
-                    <TouchableOpacity
-                        key={a.id}
-                        style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 16 }}
-                        onPress={() => navigation.navigate('ArticleDetail', { article: a })}
-                    >
-                        <Image source={a.image} style={{ width: 72, height: 72, borderRadius: 12, resizeMode: 'cover' }} />
-                        <View style={{ flex: 1, marginLeft: 12 }}>
-                            <Text style={styles.categoryLabel}>{a.category}</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '600' }} numberOfLines={2}>{a.title}</Text>
-                            <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>By {a.author}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+          </View>
+        </ImageBackground>
+        {/* Блок времени молитвы и кнопка Find Qibla */}
+        <View style={styles.prayerCard}>
+          <Text style={[Theme.typography.label, { color: colors.background }]}>Next prayer is Dhuhr</Text>
+          <Text style={[Theme.typography.h2, { color: colors.background }]}>12:23 PM</Text>
+          <Theme.elements.Button
+            title="Find Qibla"
+            variant="background"
+            style={{ marginTop: 8 }}
+            onPress={() => navigation.navigate('QiblaScreen')}
+            loading={false}
+            disabled={false}
+          />
+        </View>
+        {/* Featured Cult */}
+        <View style={styles.sectionRow}>
+          <Text style={[Theme.typography.h4, { color: colors.text }]}>Featured Cult</Text>
+          <TouchableOpacity><Text style={[Theme.typography.label, { color: colors.primary }]}>See All</Text></TouchableOpacity>
+        </View>
+        {/* Табы категорий */}
+        <View style={styles.tabsRow}>
+          {['Quran', 'Hadith', 'History', 'Creed', 'Manhaj', 'Fiqh'].map((cat) => (
+            <TouchableOpacity key={cat} style={[styles.tab, cat === 'Quran' && styles.tabActive]}>
+              <Text style={[Theme.typography.label, cat === 'Quran' ? { color: colors.primary } : { color: colors.secondary }]}>{cat}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        {/* Список видео */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 12 }}>
+          {videos.map((video) => (
+            <View key={video.id} style={styles.videoCard}>
+              <Image source={video.thumbnail} style={styles.videoImage} />
+              <Text style={[Theme.typography.label, { position: 'absolute', top: 8, left: 8, backgroundColor: colors.background, borderRadius: 4, paddingHorizontal: 4 }]}>{video.duration}</Text>
+              <Text style={[Theme.typography.h6, { marginTop: 8 }]}>{video.title}</Text>
+              <Text style={[Theme.typography.label, { color: colors.secondary }]}>{video.author}</Text>
             </View>
-
-            {/* Nearest Mosque Section */}
-            <View style={{ paddingHorizontal: 16, marginTop: 32, marginBottom: 24 }}>
-                <View style={styles.rowBetween}>
-                    <Text style={styles.sectionTitle}>Nearest Mosque</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('FindMosque')}><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
-                </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
-                    {mosquesList.map((m) => (
-                        <TouchableOpacity
-                            key={m.id}
-                            style={{ width: 200, marginRight: 16 }}
-                            onPress={() => navigation.navigate('FindMosque')}
-                        >
-                            <Image source={m.image} style={{ width: '100%', height: 120, borderRadius: 16, resizeMode: 'cover' }} />
-                            <Text style={{ fontSize: 14, fontWeight: '600', marginTop: 8 }}>{m.name}</Text>
-                            <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{m.distance}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            </View>
-
+          ))}
         </ScrollView>
+        {/* Latest Article */}
+        <View style={styles.sectionRow}>
+          <Text style={[Theme.typography.h4, { color: colors.text }]}>Latest Article</Text>
+          <TouchableOpacity><Text style={[Theme.typography.label, { color: colors.primary }]}>See All</Text></TouchableOpacity>
+        </View>
+        {/* Список статей */}
+        {articles.map((article) => (
+          <View key={article.id} style={styles.articleCard}>
+            <Image source={article.image} style={styles.articleImage} />
+            <Text style={[Theme.typography.label, { color: colors.primary }]}>{article.category}</Text>
+            <Text style={[Theme.typography.h6, { marginTop: 4 }]}>{article.title}</Text>
+            <Text style={[Theme.typography.label, { color: colors.secondary }]}>{article.author}</Text>
+          </View>
+        ))}
+      </ScrollView>
     );
 }
 
@@ -224,34 +181,69 @@ export default function HomeScreen() {
 // switching between light and dark modes.
 const createStyles = (colors: { [key: string]: string }) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.background },
-    hero: {
+    container: { flex: 1, backgroundColor: colors.background || '#FFFFFF' },
+    headerBg: {
       height: 260,
       justifyContent: 'flex-end',
     },
-    heroOverlay: {
+    headerOverlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: colors.background === '#0B1220' ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)',
+      backgroundColor: (colors.background || '#FFFFFF') === '#0B1220' ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)',
+      padding: 16,
     },
-    nextPrayerCard: {
+    headerIcons: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    prayerCard: {
       backgroundColor:
-        colors.background === '#0B1220' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+        (colors.background || '#FFFFFF') === '#0B1220' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
       marginHorizontal: 16,
       marginBottom: 16,
       borderRadius: 16,
       padding: 16,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, marginTop: 24 },
+    tabsRow: { flexDirection: 'row', paddingHorizontal: 16, marginTop: 8, marginBottom: 16 },
+    tab: {
+      flex: 1,
+      paddingVertical: 12,
       alignItems: 'center',
+      borderRadius: 16,
+      marginRight: 8,
+      backgroundColor: colors.background === '#0B1220' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
     },
-    findQiblaBtn: {
-      backgroundColor: colors.background === '#0B1220' ? colors.primary : '#fff',
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderRadius: 20,
+    tabActive: {
+      backgroundColor: colors.primary,
     },
-    rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
-    seeAll: { color: colors.primary, fontSize: 14, fontWeight: '600' },
-    categoryLabel: { fontSize: 12, color: colors.primary, marginBottom: 2 },
+    videoCard: {
+      width: 200,
+      marginRight: 16,
+      borderRadius: 16,
+      overflow: 'hidden',
+      backgroundColor: colors.background === '#0B1220' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+    },
+    videoImage: {
+      width: '100%',
+      height: 120,
+      borderRadius: 16,
+      resizeMode: 'cover',
+    },
+    articleCard: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderRadius: 16,
+      marginTop: 16,
+      backgroundColor: colors.background === '#0B1220' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+    },
+    articleImage: {
+      width: 72,
+      height: 72,
+      borderRadius: 12,
+      resizeMode: 'cover',
+    },
   });

@@ -1,3 +1,4 @@
+import { SchedulableNotificationTriggerInput } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { apiDelete, apiGet, apiPost } from '@/services/api';
@@ -65,7 +66,7 @@ export default function EventDetailScreen() {
 						title: 'Event Reminder', 
 						body: `${item.title} starts in ${selectedOption?.label ?? '30 minutes'}` 
 					},
-					trigger: { date: when },
+					trigger: { type: 'date', date: when } as any,
 				});
 				
 				// Store notification ID for later cancellation

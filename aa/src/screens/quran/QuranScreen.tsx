@@ -143,9 +143,9 @@ export default function QuranScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+  container: { flex: 1, backgroundColor: '#fff' || '#FFFFFF', padding: 16 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { fontSize: 24, fontWeight: '700' },
+  headerTitle: { fontSize: 24, fontWeight: 700 },
   headerActions: { flexDirection: 'row', alignItems: 'center' },
   searchBox: {
     marginTop: 16,
@@ -165,10 +165,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   continueTitle: { color: '#fff', fontSize: 14, marginBottom: 4 },
-  continueSubtitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  continueSubtitle: { color: '#fff', fontSize: 20, fontWeight: 700 },
   listHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  listHeaderText: { fontSize: 18, fontWeight: '700' },
-  shuffleText: { color: '#0E7490', fontSize: 14, fontWeight: '600' },
+  listHeaderText: { fontSize: 18, fontWeight: 700 },
+  shuffleText: { color: '#0E7490', fontSize: 14, fontWeight: 600 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  numberText: { color: '#0E7490', fontWeight: '700' },
-  surahName: { fontSize: 16, fontWeight: '600', color: '#111827' },
+  numberText: { color: '#0E7490', fontWeight: 700 },
+  surahName: { fontSize: 16, fontWeight: 600, color: '#111827' },
   surahTranslation: { fontSize: 12, color: '#6B7280', marginTop: 4 },
-  arabicName: { fontSize: 18, fontWeight: '700', color: '#0E7490' },
+  arabicName: { fontSize: 18, fontWeight: 700, color: '#0E7490' },
 });

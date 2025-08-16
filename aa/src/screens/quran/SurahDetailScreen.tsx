@@ -1,192 +1,189 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-} from 'react-native';
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import { quranService, Ayah, Surah } from '@/services/quranService';
+import { Theme } from '../../theme/theme';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
+import React, { useState } from 'react';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
-/**
- * SurahDetailScreen displays the verses of a surah with Arabic text,
- * translations and basic interaction icons.  Users can tap the translation
- * icon to open a bottom sheet with additional information.  Audio playback
- * is not implemented but icons are provided as placeholders.
- */
-export default function SurahDetailScreen() {
-  const route = useRoute<any>() as RouteProp<any>;
-  const navigation = useNavigation<any>();
-  const surah = (route.params?.surah || {}) as Surah;
-  const [ayahs, setAyahs] = useState<Ayah[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedAyah, setSelectedAyah] = useState<Ayah | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
+interface Ayah {
+  id: number;
+  arabic: string;
+  translation: string;
+  audio?: boolean;
+}
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const data = await quranService.getSurahAyahs(surah.number);
-        setAyahs(data);
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [surah?.number]);
+type Surah = {
+  id: number;
+  name: string;
+};
 
-  function openDetail(ayah: Ayah) {
-    setSelectedAyah(ayah);
-    setShowDetail(true);
-  }
+type RootStackParamList = {
+  SurahDetail: { surah: Surah };
+};
 
-  function renderItem({ item }: { item: Ayah }) {
-    return (
-      <View style={styles.ayahRow}>
-        <View style={styles.numberCircle}>
-          <Text style={styles.numberText}>{item.number}</Text>
-        </View>
-        <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={styles.arabic}>{item.text}</Text>
-          {item.translation && <Text style={styles.translation}>{item.translation}</Text>}
-        </View>
-        {/* Action icons */}
-        <View style={styles.iconRow}>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => { /* TODO: audio playback */ }}>
-            <Text style={styles.iconText}>▶️</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => { /* TODO: favourite */ }}>
-            <Text style={styles.iconText}>♡</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => openDetail(item)}>
-            <Text style={styles.iconText}>📖</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => { /* TODO: share */ }}>
-            <Text style={styles.iconText}>🔗</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+type Props = {
+  navigation: StackNavigationProp<RootStackParamList, 'SurahDetail'>;
+  route: { params: { surah: Surah } };
+};
+
+const ayahs: Ayah[] = [
+  { id: 1, arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', translation: 'In the Name of Allah—the Most Compassionate, Most Merciful.' },
+  { id: 2, arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', translation: 'All praise is for Allah—Lord of all worlds', audio: true },
+  { id: 3, arabic: 'الرَّحْمَٰنِ الرَّحِيمِ', translation: 'The Most Compassionate, Most Merciful,' },
+  { id: 4, arabic: 'مَالِكِ يَوْمِ الدِّينِ', translation: 'Master of the Day of Judgment.' },
+  { id: 5, arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', translation: "You 'alone' we worship and You 'alone' we ask for help." },
+  { id: 6, arabic: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', translation: 'Guide us along the Straight Path,' },
+  { id: 7, arabic: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', translation: 'the Path of those You have blessed—not those You are displeased with, or those who are astray.' },
+];
+
+const SurahDetailScreen: React.FC<any> = ({ navigation, route }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const { surah } = route.params;
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 4 }}>
-          <Text style={{ fontSize: 20 }}>←</Text>
+      {/* Top Bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
+            <Text style={[Theme.typography.h4, { color: Theme.palette.text }]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>{surah.englishName} - {surah.name}</Text>
-        <TouchableOpacity style={{ padding: 4 }} onPress={() => { /* settings if needed */ }}>
-          <Text style={{ fontSize: 20 }}>⚙️</Text>
+  <Text style={[Theme.typography.h5, { color: Theme.palette.text }]}>{surah.name}</Text>
+        <TouchableOpacity style={styles.iconBtn}>
+            <Text style={[Theme.typography.h4, { color: Theme.palette.text }]}>⚙️</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={ayahs}
-        keyExtractor={(item) => String(item.number)}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-        ListEmptyComponent={
-          loading ? (
-            <Text style={{ padding: 16 }}>Loading…</Text>
-          ) : (
-            <Text style={{ padding: 16 }}>{error || 'No data'}</Text>
-          )
-        }
-        contentContainerStyle={{ paddingBottom: 80 }}
-      />
-      {/* Translation detail modal */}
-      <Modal
-        visible={showDetail}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowDetail(false)}
-      >
+      {/* Ayah List */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
+        {ayahs.map((a) => (
+          <View key={a.id} style={styles.ayahCard}>
+            <View style={styles.ayahCircle}><Text style={[Theme.typography.h5]}>{a.id}</Text></View>
+            <View style={{ flex: 1 }}>
+                <Text style={[Theme.typography.h5, { color: Theme.palette.text, textAlign: 'right' }]}>{a.arabic}</Text>
+              <Text style={[Theme.typography.paragraph, { color: Theme.palette.secondary }]}>{a.translation}</Text>
+            </View>
+            {/* Icons row */}
+            <View style={styles.iconsRow}>
+              <TouchableOpacity><Text style={[Theme.typography.h5]}>▶️</Text></TouchableOpacity>
+              <TouchableOpacity><Text style={[Theme.typography.h5]}>📖</Text></TouchableOpacity>
+              <TouchableOpacity><Text style={[Theme.typography.h5]}>🔗</Text></TouchableOpacity>
+            </View>
+            {/* Audio player for ayah 2 */}
+            {a.audio && (
+              <View style={styles.audioRow}>
+                <Text style={[Theme.typography.paragraph, { color: Theme.palette.surface }]}>00:04 / 00:12</Text>
+                <TouchableOpacity><Text style={[Theme.typography.h5]}>⏸️</Text></TouchableOpacity>
+              </View>
+            )}
+          </View>
+        ))}
+      </ScrollView>
+      {/* Modal Description */}
+      <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
-            <View style={{ alignItems: 'center', marginBottom: 12 }}>
-              <View style={styles.modalHandle} />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={styles.modalTitle}>{surah.englishName}</Text>
-              <TouchableOpacity onPress={() => setShowDetail(false)}>
-                <Text style={{ fontSize: 20 }}>✕</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.modalSubtitle}>Verses {selectedAyah?.number}</Text>
-            <ScrollView style={{ marginTop: 12 }}>
-              <Text style={styles.modalBody}>{selectedAyah?.tafsir || selectedAyah?.translation || ''}</Text>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHandle} />
+            <Text style={[Theme.typography.h5, { marginBottom: 4 }]}>{surah.name}</Text>
+            <Text style={[Theme.typography.paragraph, { color: Theme.palette.secondary }]}>Verses 2</Text>
+            <ScrollView style={{ maxHeight: 320 }}>
+              <Text style={[Theme.typography.paragraph, { color: Theme.palette.text }]}>The Quran has a special and characteristic way of expressing a believer’s inner sentiments in the most appropriate words. The invocation of God in the opening chapter of the Quran, constitute a supplication of this nature. The feelings which are naturally aroused in one after discovering the truth are expressed in these lines. When man looks at the world around him, he cannot fail to notice God’s power and mercy abundantly in evidence everywhere. Wherever he casts his glance, he finds extraordinary order and supervision.\n\nEverything has been extraordinarily and astonishingly adapted to man’s needs. This observation shows that the great cosmic machine cannot be in vain. Therefore, one realizes that there must come a day when the grateful and the ungrateful are rewarded for the way they have lived their lives in this world. One spontaneously entreats God in words to this effect, ‘Lord, You are the Master of the Day of Judgement. I have submitted to You and humbly seek Your help; have mercy on me. Lord, show us the path that is, to You, the true path, the path of Your chosen servants, those who have gone astray, and the path of those who have incurred Your wrath due to their actions.’ (Сокращено для примера)</Text>
             </ScrollView>
+            <Theme.elements.Button title="Scroll Down for More" variant="primary" style={styles.scrollBtn} onPress={() => {}} loading={false} disabled={false} />
+            <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
+              <Text style={[Theme.typography.h4, { color: Theme.palette.secondary }]}>✕</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
     </View>
   );
-}
+};
+export default SurahDetailScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  headerRow: {
+  container: {
+    flex: 1,
+    backgroundColor: Theme.palette.background || '#FFFFFF',
+  },
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 12,
+    backgroundColor: Theme.palette.surface,
   },
-  title: { fontSize: 20, fontWeight: '700', flex: 1, textAlign: 'center', color: '#111827' },
-  ayahRow: {
+  iconBtn: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ayahCard: {
+    backgroundColor: Theme.palette.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 12,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    padding: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  numberCircle: {
+  ayahCircle: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#ECFDF5',
-    justifyContent: 'center',
+    backgroundColor: Theme.palette.primary,
     alignItems: 'center',
-    marginTop: 4,
+    justifyContent: 'center',
+    marginRight: 12,
   },
-  numberText: { color: '#0E7490', fontWeight: '700' },
-  arabic: { fontSize: 20, textAlign: 'right', color: '#111827' },
-  translation: { fontSize: 14, color: '#6B7280', marginTop: 4 },
-  iconRow: {
+  iconsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 8,
+    marginLeft: 12,
   },
-  iconBtn: { paddingHorizontal: 4 },
-  iconText: { fontSize: 18 },
-  // Modal styles
+  audioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    marginLeft: 12,
+  },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    alignItems: 'center',
     justifyContent: 'flex-end',
   },
-  modalSheet: {
-    backgroundColor: '#fff',
+  modalCard: {
+    backgroundColor: Theme.palette.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '80%',
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    paddingTop: 8,
+    padding: 24,
+    alignItems: 'center',
+    width: '100%',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
   },
   modalHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#D1D5DB',
+    width: 48,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Theme.palette.secondary,
+    marginBottom: 12,
   },
-  modalTitle: { fontSize: 18, fontWeight: '700', color: '#111827' },
-  modalSubtitle: { fontSize: 12, color: '#6B7280', marginTop: 4 },
-  modalBody: { fontSize: 14, color: '#374151', lineHeight: 22 },
+  scrollBtn: {
+    marginTop: 24,
+    width: '100%',
+    borderRadius: 16,
+    height: 48,
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+  },
 });

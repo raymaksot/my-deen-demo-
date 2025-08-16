@@ -20,8 +20,8 @@ export default function DailyContent({ style }: DailyContentProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { colors, fontMultiplier } = useThemeConfig();
-  const styles = React.useMemo(() => createStyles(colors, fontMultiplier), [colors, fontMultiplier]);
+  const { palette, fontMultiplier } = useThemeConfig();
+  const styles = React.useMemo(() => createStyles(palette, fontMultiplier), [palette, fontMultiplier]);
 
   useEffect(() => {
     loadDailyContent();
@@ -49,7 +49,7 @@ export default function DailyContent({ style }: DailyContentProps) {
   if (loading) {
     return (
       <View style={[styles.container, style]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+  <ActivityIndicator size="large" color={palette.primary} />
         <Text style={styles.loadingText}>Loading daily content...</Text>
       </View>
     );
@@ -127,7 +127,7 @@ const createStyles = (colors: { [key: string]: string }, fontMultiplier: number)
       marginHorizontal: 16,
     },
     contentCard: {
-      backgroundColor: colors.card || colors.background,
+    backgroundColor: colors.card || colors.background || '#FFFFFF',
       marginHorizontal: 16,
       marginBottom: 16,
       borderRadius: 16,
@@ -138,7 +138,7 @@ const createStyles = (colors: { [key: string]: string }, fontMultiplier: number)
       shadowOpacity: 0.1,
       shadowRadius: 4,
       borderWidth: 1,
-      borderColor: colors.border || (colors.background === '#0B1220' ? '#1F2937' : '#E5E7EB'),
+    borderColor: colors.border || ((colors.background || '#FFFFFF') === '#0B1220' ? '#1F2937' : '#E5E7EB'),
     },
     cardHeader: {
       marginBottom: 12,

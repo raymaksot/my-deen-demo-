@@ -36,7 +36,7 @@ export const login = createAsyncThunk(
 	'auth/login',
 	async (payload: { email: string; password: string }) => {
 		const res = await authService.login(payload.email, payload.password);
-		await SecureStore.setItemAsync(TOKEN_KEY, res.token);
+		await SecureStore.setItemAsync(TOKEN_KEY, String(res.token));
 		await SecureStore.setItemAsync(USER_KEY, JSON.stringify(res.user));
 		setAuthToken(res.token);
 		return res;
@@ -47,7 +47,7 @@ export const register = createAsyncThunk(
 	'auth/register',
 	async (payload: { name: string; email: string; password: string }) => {
 		const res = await authService.register(payload.name, payload.email, payload.password);
-		await SecureStore.setItemAsync(TOKEN_KEY, res.token);
+		await SecureStore.setItemAsync(TOKEN_KEY, String(res.token));
 		await SecureStore.setItemAsync(USER_KEY, JSON.stringify(res.user));
 		setAuthToken(res.token);
 		return res;
@@ -56,7 +56,7 @@ export const register = createAsyncThunk(
 
 export const googleLogin = createAsyncThunk('auth/googleLogin', async (idToken: string) => {
 	const res = await authService.googleLogin(idToken);
-	await SecureStore.setItemAsync(TOKEN_KEY, res.token);
+	await SecureStore.setItemAsync(TOKEN_KEY, String(res.token));
 	await SecureStore.setItemAsync(USER_KEY, JSON.stringify(res.user));
 	setAuthToken(res.token);
 	return res;

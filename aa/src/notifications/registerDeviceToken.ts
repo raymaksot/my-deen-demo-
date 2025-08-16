@@ -43,7 +43,7 @@ export async function registerDeviceToken(
 
   // persist locally
   try {
-    await SecureStore.setItemAsync('pushToken', pushToken);
+    await SecureStore.setItemAsync('pushToken', String(pushToken));
   } catch {}
 
   // send to backend (optional; ignore failures in dev)
@@ -51,7 +51,7 @@ export async function registerDeviceToken(
     try {
       await axios.post(
         `${backendBaseUrl}/api/devices/register`,
-        { pushToken, platform: Platform.OS },
+        { token: pushToken, platform: Platform.OS },
         userJwt ? { headers: { Authorization: `Bearer ${userJwt}` } } : undefined
       );
     } catch {

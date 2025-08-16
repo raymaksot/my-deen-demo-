@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Theme } from '../../theme/theme';
 
 interface Video {
   id: string;
@@ -65,135 +66,108 @@ export default function VideosScreen() {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ fontSize: 20 }}>←</Text>
+          <Text style={[Theme.typography.h4, { color: Theme.palette.text }]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Cult Videos</Text>
+  <Text style={[Theme.typography.h4, { color: Theme.palette.text }]}>Cult Videos</Text>
+        {/* TODO: добавить иконку настроек через Theme.elements.Icon */}
       </View>
+      {/* Поисковое поле */}
       <View style={styles.searchBox}>
-        <Text style={{ color: '#9ca3af' }}>Search surah or Verse</Text>
+  <Text style={[Theme.typography.label, { color: Theme.palette.secondary }]}>Search surah or Verse</Text>
       </View>
-      {/* Featured */}
-      <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>Featured Cult</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAll}>See All</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 12 }}>
-          {categories.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              onPress={() => setSelectedCat(cat)}
-              style={[styles.tab, selectedCat === cat && styles.tabSelected]}
-            >
-              <Text style={[styles.tabText, selectedCat === cat && styles.tabTextSelected]}>{cat}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {featured.map((v) => (
-            <TouchableOpacity
-              key={v.id}
-              style={styles.videoCard}
-              onPress={() => navigation.navigate('VideoDetail', { video: v })}
-            >
-              <View style={{ position: 'relative' }}>
-                <Image source={v.thumbnail} style={styles.videoThumbnail} />
-                <View style={styles.durationBadge}>
-                  <Text style={styles.durationText}>{v.duration}</Text>
-                </View>
-              </View>
-              <Text style={styles.videoTitle} numberOfLines={2}>{v.title}</Text>
-              <Text style={styles.videoAuthor}>By {v.author}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+      {/* Featured Cult */}
+      <View style={styles.sectionRow}>
+  <Text style={[Theme.typography.h5, { color: Theme.palette.text }]}>Featured Cult</Text>
+  <TouchableOpacity><Text style={[Theme.typography.label, { color: Theme.palette.primary }]}>See All</Text></TouchableOpacity>
       </View>
-      {/* Recently Viewed */}
-      <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-        <Text style={styles.sectionTitle}>Recently Viewed</Text>
-        {recent.map((v) => (
-          <TouchableOpacity
-            key={v.id}
-            style={styles.recentRow}
-            onPress={() => navigation.navigate('VideoDetail', { video: v })}
-          >
-            <View style={{ position: 'relative' }}>
-              <Image source={v.thumbnail} style={styles.recentThumb} />
-              <View style={styles.durationBadgeSmall}>
-                <Text style={styles.durationTextSmall}>{v.duration}</Text>
-              </View>
-            </View>
-            <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={styles.videoTitle}>{v.title}</Text>
-              <Text style={styles.videoAuthor}>By {v.author}</Text>
-            </View>
+      {/* Табы категорий */}
+      <View style={styles.tabsRow}>
+        {categories.map((cat) => (
+          <TouchableOpacity key={cat} style={[styles.tab, cat === selectedCat && styles.tabActive]} onPress={() => setSelectedCat(cat)}>
+            <Text style={[Theme.typography.label, cat === selectedCat ? { color: Theme.palette.primary } : { color: Theme.palette.secondary }]}>{cat}</Text>
           </TouchableOpacity>
         ))}
       </View>
+      {/* Список видео */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 12 }}>
+        {featured.map((video) => (
+          <View key={video.id} style={styles.videoCard}>
+            <Image source={video.thumbnail} style={styles.videoImage} />
+            <Text style={[Theme.typography.label, { position: 'absolute', top: 8, left: 8, backgroundColor: Theme.palette.background, borderRadius: 4, paddingHorizontal: 4 }]}>{video.duration}</Text>
+            <Text style={[Theme.typography.h6, { marginTop: 8 }]}>{video.title}</Text>
+            <Text style={[Theme.typography.label, { color: Theme.palette.secondary }]}>{video.author}</Text>
+          </View>
+        ))}
+      </ScrollView>
+      {/* Recently Viewed */}
+      <Text style={[Theme.typography.h5, { marginTop: 24 }]}>Recently Viewed</Text>
+      {recent.map((video) => (
+        <View key={video.id} style={styles.videoCard}>
+          <Image source={video.thumbnail} style={styles.videoImage} />
+          <Text style={[Theme.typography.label, { position: 'absolute', top: 8, left: 8, backgroundColor: Theme.palette.background, borderRadius: 4, paddingHorizontal: 4 }]}>{video.duration}</Text>
+          <Text style={[Theme.typography.h6, { marginTop: 8 }]}>{video.title}</Text>
+          <Text style={[Theme.typography.label, { color: Theme.palette.secondary }]}>{video.author}</Text>
+        </View>
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  headerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16 },
-  backBtn: { padding: 4, marginRight: 8 },
-  headerTitle: { fontSize: 20, fontWeight: '600' },
-  searchBox: {
-    marginTop: 16,
-    marginHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 12,
-    padding: 12,
-    backgroundColor: '#f9fafb',
+  container: {
+    flex: 1,
+    backgroundColor: Theme.palette.background || '#FFFFFF',
   },
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  sectionTitle: { fontSize: 18, fontWeight: '700' },
-  seeAll: { color: '#0E7490', fontSize: 14, fontWeight: '600' },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  backgroundColor: Theme.palette.surface,
+  },
+  backBtn: {
+    marginRight: 12,
+  },
+  searchBox: {
+    margin: 16,
+    padding: 12,
+  backgroundColor: Theme.palette.surface,
+    borderRadius: 8,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 16,
+  },
+  tabsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginTop: 12,
+  },
   tab: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 16,
-    backgroundColor: '#f9fafb',
+  backgroundColor: Theme.palette.surface,
     marginRight: 8,
   },
-  tabSelected: { backgroundColor: '#d1fae5' },
-  tabText: { fontSize: 14, color: '#6b7280' },
-  tabTextSelected: { color: '#0E7490', fontWeight: '600' },
+  tabActive: {
+  backgroundColor: Theme.palette.primary,
+  },
   videoCard: {
-    width: 200,
-    marginRight: 16,
+    width: 160,
+    marginRight: 12,
+  backgroundColor: Theme.palette.surface,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+    padding: 8,
   },
-  videoThumbnail: { width: '100%', height: 120, borderRadius: 16, resizeMode: 'cover' },
-  durationBadge: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+  videoImage: {
+    width: '100%',
+    height: 80,
+    resizeMode: 'cover',
+    borderRadius: 8,
   },
-  durationText: { color: '#fff', fontSize: 10 },
-  videoTitle: { fontSize: 14, fontWeight: '600', marginTop: 8 },
-  videoAuthor: { fontSize: 12, color: '#6b7280', marginTop: 2 },
-  recentRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  recentThumb: { width: 100, height: 70, borderRadius: 12, resizeMode: 'cover' },
-  durationBadgeSmall: {
-    position: 'absolute',
-    bottom: 4,
-    right: 4,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    borderRadius: 4,
-  },
-  durationTextSmall: { color: '#fff', fontSize: 9 },
 });

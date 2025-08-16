@@ -24,7 +24,7 @@ export const useThemeColors = () => {
   const highContrast = useAppSelector((s) => s.preferences.highContrast);
   
   if (highContrast) {
-    return themeMode === 'dark' ? darkHighContrastTheme.colors : lightHighContrastTheme.colors;
+  return themeMode === 'dark' ? darkHighContrastTheme.colors : lightHighContrastTheme.colors;
   }
   
   return themeMode === 'dark' ? darkTheme.colors : lightTheme.colors;
@@ -42,10 +42,10 @@ export const useFontSize = () => {
  * Combined hook that returns both colors and font size multiplier
  */
 export const useThemeConfig = () => {
-  const colors = useThemeColors();
+  const palette = useThemeColors();
   const fontMultiplier = useFontSize();
   
-  return { colors, fontMultiplier };
+  return { palette, fontMultiplier };
 };
 
 // Re-export constants for convenience
@@ -56,3 +56,19 @@ export {
   darkHighContrastTheme, 
   fontSizeMultipliers 
 };
+
+// Интеграция UI Kit
+import { typography } from '../ui/typography';
+import uiColors from '../ui/colors';
+import * as elements from '../ui/elements';
+
+export const Theme = {
+  typography,
+  palette: uiColors,
+  elements,
+};
+
+// Для использования: import Theme from 'src/theme/theme';
+// Theme.typography, Theme.palette, Theme.elements.Button и т.д.
+
+export default Theme;

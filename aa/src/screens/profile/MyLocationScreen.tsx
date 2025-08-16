@@ -110,7 +110,7 @@ export default function MyLocationScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' || '#FFFFFF' },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',

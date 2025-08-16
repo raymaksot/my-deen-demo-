@@ -23,6 +23,6 @@ export default function ZakatCalculatorScreen() {
 
 const styles = StyleSheet.create({
 	container: { flex: 1, padding: 16 },
-	title: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
+	title: { fontSize: 18, fontWeight: 700, marginBottom: 12 },
 	input: { borderColor: '#e5e7eb', borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 12 },
 });

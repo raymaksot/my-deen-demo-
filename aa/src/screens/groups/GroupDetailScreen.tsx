@@ -28,10 +28,10 @@ export default function GroupDetailScreen() {
 	const [toAyah, setToAyah] = useState('');
 
 	// Check if current user is group owner
-	const isOwner = members.find(m => m.userId === user?.sub)?.role === 'owner';
+	const isOwner = members.find(m => m.userId === user?._id)?.role === 'owner';
 	
 	// Check current user membership status
-	const currentMember = members.find(m => m.userId === user?.sub);
+	const currentMember = members.find(m => m.userId === user?._id);
 	const isMember = !!currentMember;
 	const canJoin = !isMember;
 	const canLeave = isMember && !isOwner;
@@ -131,16 +131,16 @@ export default function GroupDetailScreen() {
 		try {
 			await groupsService.join(id);
 			// Add current user to members list
-			if (user?.sub) {
-				const newMember: Member = { userId: user.sub, role: 'member' };
+			if (user?._id) {
+				const newMember: Member = { userId: user._id, role: 'member' };
 				setMembers([...members, newMember]);
 			}
 		} catch (error) {
 			// If network fails, queue the mutation for offline sync
 			await enqueue('joinGroup', { groupId: id });
 			// Optimistically update UI
-			if (user?.sub) {
-				const newMember: Member = { userId: user.sub, role: 'member' };
+			if (user?._id) {
+				const newMember: Member = { userId: user._id, role: 'member' };
 				setMembers([...members, newMember]);
 			}
 		}
@@ -150,12 +150,12 @@ export default function GroupDetailScreen() {
 		try {
 			await groupsService.leave(id);
 			// Remove current user from members list
-			setMembers(members.filter(m => m.userId !== user?.sub));
+			setMembers(members.filter(m => m.userId !== user?._id));
 		} catch (error) {
 			// If network fails, queue the mutation for offline sync
 			await enqueue('leaveGroup', { groupId: id });
 			// Optimistically update UI
-			setMembers(members.filter(m => m.userId !== user?.sub));
+			setMembers(members.filter(m => m.userId !== user?._id));
 		}
 	}
 

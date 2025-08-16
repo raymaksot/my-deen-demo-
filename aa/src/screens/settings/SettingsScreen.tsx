@@ -10,7 +10,7 @@ export default function SettingsScreen() {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const prefs = useAppSelector((s) => s.preferences);
-	const { colors, fontMultiplier } = useThemeConfig();
+	const { palette, fontMultiplier } = useThemeConfig();
 	const [notif, setNotif] = useState({ prayerTimes: true, events: true, articles: true, groupMilestones: true });
 
 	useEffect(() => {
@@ -39,75 +39,69 @@ export default function SettingsScreen() {
 	}
 
 	return (
-		<View style={[styles.container, { backgroundColor: colors.background }]}>
-			<Text style={[styles.title, { color: colors.text, fontSize: 18 * fontMultiplier }]}>Settings</Text>
+			<View style={[styles.container, { backgroundColor: palette?.background || '#FFFFFF' }]}> 
+				<Text style={[styles.title, { color: palette?.text || '#111111', fontSize: 18 * fontMultiplier }]}>Settings</Text>
 			
 			{/* Theme Settings */}
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Dark Mode</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Dark Mode</Text>
 				<Switch value={prefs.themeMode === 'dark'} onValueChange={toggleTheme} />
 			</View>
 			
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>High Contrast</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>High Contrast</Text>
 				<Switch value={prefs.highContrast} onValueChange={toggleHighContrast} />
 			</View>
 
 			{/* Font Size Settings */}
-			<Text style={[styles.section, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Font Size</Text>
+			<Text style={[styles.section, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Font Size</Text>
 			<View style={styles.fontSizeContainer}>
 				{(['small', 'medium', 'large'] as FontSize[]).map((size) => (
-					<TouchableOpacity
-						key={size}
-						style={[
-							styles.fontSizeOption,
-							{
-								backgroundColor: prefs.fontSize === size ? colors.primary : colors.card,
-								borderColor: colors.border,
-							}
-						]}
-						onPress={() => handleFontSizeChange(size)}
-					>
-						<Text style={[
-							styles.fontSizeText,
-							{
-								color: prefs.fontSize === size ? colors.background : colors.text,
-								textTransform: 'capitalize',
-								fontSize: 14 * fontMultiplier,
-							}
-						]}>
-							{size}
-						</Text>
-					</TouchableOpacity>
+								<TouchableOpacity
+									key={size}
+									style={[styles.fontSizeOption, {
+										backgroundColor: prefs.fontSize === size ? palette?.primary || '#0E7490' : palette?.card || '#F5F7FA',
+										borderColor: palette?.border || '#E5E7EB',
+									}]}
+									onPress={() => handleFontSizeChange(size)}
+								>
+									<Text style={[styles.fontSizeText, {
+										color: prefs.fontSize === size ? (palette?.background || '#FFFFFF') : (palette?.text || '#111111'),
+										textTransform: 'capitalize',
+										fontSize: 14 * fontMultiplier,
+									}]}> 
+										{size}
+									</Text>
+								</TouchableOpacity>
 				))}
 			</View>
 
 			{/* Notifications */}
-			<Text style={[styles.section, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Notifications</Text>
+			<Text style={[styles.section, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Notifications</Text>
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Prayer Times</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Prayer Times</Text>
 				<Switch value={notif.prayerTimes} onValueChange={() => toggleNotif('prayerTimes')} />
 			</View>
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Events</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Events</Text>
 				<Switch value={notif.events} onValueChange={() => toggleNotif('events')} />
 			</View>
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Articles</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Articles</Text>
 				<Switch value={notif.articles} onValueChange={() => toggleNotif('articles')} />
 			</View>
 			<View style={styles.row}>
-				<Text style={[styles.label, { color: colors.text, fontSize: 16 * fontMultiplier }]}>Group Milestones</Text>
+			<Text style={[styles.label, { color: palette?.text || '#111111', fontSize: 16 * fontMultiplier }]}>Group Milestones</Text>
 				<Switch value={notif.groupMilestones} onValueChange={() => toggleNotif('groupMilestones')} />
 			</View>
 
 			{/* Legal Links */}
 			<View style={{ marginTop: 16 }}>
 				<TouchableOpacity onPress={() => navigation.navigate('Terms')}>
-					<Text style={[styles.link, { color: colors.primary, fontSize: 14 * fontMultiplier }]}>Terms of Service</Text>
+					  <Text style={[styles.link, { color: palette?.primary || '#0E7490', fontSize: 14 * fontMultiplier }]}>Terms of Service</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={() => navigation.navigate('Privacy')}>
-					<Text style={[styles.link, { color: colors.primary, fontSize: 14 * fontMultiplier }]}>Privacy Policy</Text>
+					  <Text style={[styles.link, { color: palette?.primary || '#0E7490', fontSize: 14 * fontMultiplier }]}>Privacy Policy</Text>
 				</TouchableOpacity>
 			</View>
 		</View>

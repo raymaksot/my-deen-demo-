@@ -139,7 +139,7 @@ export default function PrayerTimesScreen() {
               </View>
             ))}
             <TouchableOpacity onPress={() => setSettingsVisible(false)} style={styles.closeBtn}>
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Done</Text>
+              <Text style={{ color: '#fff', fontWeight: 600 }}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -149,9 +149,9 @@ export default function PrayerTimesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+  container: { flex: 1, backgroundColor: '#fff' || '#FFFFFF', padding: 16 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  headerTitle: { fontSize: 20, fontWeight: '700' },
+  headerTitle: { fontSize: 20, fontWeight: 700 },
   monthPicker: {
     borderWidth: 1,
     borderColor: '#e5e7eb',
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E7490',
   },
   dayText: { color: '#374151' },
-  dayTextSelected: { color: '#fff', fontWeight: '700' },
+  dayTextSelected: { color: '#fff', fontWeight: 700 },
   sectionTitle: { fontSize: 18, fontWeight: '700' },
   prayerRow: {
     flexDirection: 'row',

@@ -19,7 +19,7 @@ export default function SecondaryButton({ title, onPress, disabled, style, textS
 				styles.button, 
 				{ 
 					borderColor: colors.border,
-					backgroundColor: colors.background === '#0B1220' ? 'rgba(255,255,255,0.1)' : '#fff'
+					backgroundColor: (colors.background || '#FFFFFF') === '#0B1220' ? 'rgba(255,255,255,0.1)' : (colors.background || '#FFFFFF')
 				},
 				disabled && { opacity: 0.6 },
 				style

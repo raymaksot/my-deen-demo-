@@ -320,7 +320,12 @@ const VIDEOS = [
 ];
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -948,7 +953,9 @@ module.exports = { app, start };
 
 if (require.main === module) {
   start().catch((e) => {
-    console.error('Failed to start server', e);
+    console.error('Failed to start server:', e.message);
+    if (e.stack) console.error(e.stack);
+    if (e.errors) console.error('Mongoose errors:', e.errors);
     process.exit(1);
   });
 }

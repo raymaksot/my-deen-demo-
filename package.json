@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/raymaksot/first-repo#readme",
   "dependencies": {
+    "@react-navigation/stack": "^7.4.7",
     "adhan": "^4.4.3",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",

@@ -96,8 +96,8 @@ export default function QADetailScreen() {
 
 const styles = StyleSheet.create({
 	container: { flex: 1, padding: 16 },
-	title: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+	title: { fontSize: 18, fontWeight: 700, marginBottom: 8 },
 	q: { marginBottom: 12 },
-	section: { fontSize: 16, fontWeight: '700', marginTop: 12, marginBottom: 8 },
+	section: { fontSize: 16, fontWeight: 700, marginTop: 12, marginBottom: 8 },
 	likeBtn: { paddingVertical: 6, paddingHorizontal: 10 },
 });

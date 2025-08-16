@@ -15,7 +15,8 @@
     "types": [
       "react",
       "react-native",
-      "react-native-web"
+      "react-native-web",
+      "jest"
     ],
     "baseUrl": ".",
     "paths": {
@@ -62,7 +63,8 @@
   },
   "include": [
     "src",
-    "App.tsx"
+    "App.tsx",
+    "src/theme/__tests__"
   ],
   "exclude": [
     "node_modules"

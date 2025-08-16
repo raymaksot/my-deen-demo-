@@ -35,7 +35,7 @@ export default function HadithScreen() {
 			</View>
 			<FlatList
 				data={items}
-				keyExtractor={(i) => i._id}
+				keyExtractor={(item, index) => item._id ? String(item._id) : String(index)}
 				renderItem={({ item }) => (
 					<View style={styles.row}>
 						<Text style={{ fontWeight: '600' }}>{item.collection} #{item.number || ''}</Text>

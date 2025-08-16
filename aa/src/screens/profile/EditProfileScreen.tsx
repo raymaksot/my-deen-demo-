@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-} from 'react-native';
+import Theme from '../../theme/theme';
+import { Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setUser } from '@/store/authSlice';
@@ -23,7 +17,7 @@ const genderOptions: { label: string; value: 'male' | 'female' | 'other' }[] = [
  * EditProfileScreen allows the user to update their name, gender and location.
  * The email is shown read‑only.  A simple modal is used to select gender.
  */
-export default function EditProfileScreen() {
+function EditProfileScreen() {
   const navigation = useNavigation<any>();
   const user = useAppSelector((s) => s.auth.user);
   const dispatch = useAppDispatch();
@@ -33,6 +27,7 @@ export default function EditProfileScreen() {
   const [location, setLocation] = useState('');
   const [showGenderPicker, setShowGenderPicker] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [avatar, setAvatar] = useState(require('../../../assets/signin_dark.png'));
 
   useEffect(() => {
     if (user) {
@@ -51,6 +46,8 @@ export default function EditProfileScreen() {
       navigation.goBack();
     } catch (e) {
       console.error('Failed to update profile', e);
+      // Показываем пользователю ошибку
+  Alert.alert('Ошибка', 'Не удалось сохранить профиль. Попробуйте позже.');
     } finally {
       setSaving(false);
     }
@@ -58,57 +55,41 @@ export default function EditProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 4 }}>
-          <Text style={{ fontSize: 20 }}>←</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={[Theme.typography.h4, { color: Theme.palette.surface }]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-        <View style={{ width: 24 }} />
+  <Text style={[Theme.typography.h4, { color: Theme.palette.surface }]}>Edit Profile</Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Enter your name"
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, { backgroundColor: '#F3F4F6', color: '#9CA3AF' }]}
-            value={email}
-            editable={false}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Gender</Text>
-          <TouchableOpacity
-            style={[styles.input, { justifyContent: 'center' }]}
-            onPress={() => setShowGenderPicker(true)}
-          >
-            <Text style={{ color: gender ? '#111827' : '#9CA3AF' }}>{genderOptions.find((g) => g.value === gender)?.label}</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Location</Text>
-          <TextInput
-            style={styles.input}
-            value={location}
-            onChangeText={setLocation}
-            placeholder="Enter your city or address"
-          />
-        </View>
+      <View style={styles.avatarBox}>
+        <Image source={avatar} style={styles.avatar} />
+  <TouchableOpacity style={styles.avatarEdit}><Text style={[Theme.typography.h5, { color: Theme.palette.primary }]}>✎</Text></TouchableOpacity>
+      </View>
+      <View style={styles.form}>
+  <Text style={[Theme.typography.h5, { color: Theme.palette.text }]}>Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Your Name"
+          placeholderTextColor={Theme.palette.secondary}
+        />
+  <Text style={[Theme.typography.h5, { color: Theme.palette.text, marginTop: 16 }]}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email Address"
+          placeholderTextColor={Theme.palette.secondary}
+        />
         <TouchableOpacity
-          style={[styles.saveButton, { backgroundColor: saving ? '#9CA3AF' : '#0E7490' }]}
+          style={[styles.saveBtn, { backgroundColor: saving ? '#9CA3AF' : '#0E7490' }]}
           onPress={handleSave}
           disabled={saving || !name}
         >
-          <Text style={{ color: '#fff', fontWeight: '600' }}>{saving ? 'Saving…' : 'Save Changes'}</Text>
+          <Text style={[Theme.typography.h5, { color: Theme.palette.surface }]}>Save Changes</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
       {/* Gender picker modal */}
       <Modal
         visible={showGenderPicker}
@@ -139,34 +120,67 @@ export default function EditProfileScreen() {
       </Modal>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  headerRow: {
+  container: {
+    flex: 1,
+    backgroundColor: Theme.palette.background || '#FFFFFF',
+    padding: 0,
+  },
+  header: {
+    height: 80,
+  backgroundColor: Theme.palette.primary,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 24,
   },
-  headerTitle: { fontSize: 20, fontWeight: '700', flex: 1, textAlign: 'center', color: '#111827' },
-  inputGroup: { marginBottom: 16 },
-  label: { marginBottom: 4, fontSize: 14, color: '#6B7280' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#fff',
+  backBtn: {
+    marginRight: 16,
   },
-  saveButton: {
-    marginTop: 32,
-    paddingVertical: 16,
-    borderRadius: 24,
+  avatarBox: {
     alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 8,
+    resizeMode: 'cover',
+  },
+  avatarEdit: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  backgroundColor: Theme.palette.surface,
+    borderRadius: 16,
+    padding: 4,
+    elevation: 2,
+  },
+  form: {
+    paddingHorizontal: 24,
+  },
+  input: {
+  ...Theme.typography.paragraph,
+  backgroundColor: Theme.palette.surface,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 8,
+  color: Theme.palette.text,
+    borderWidth: 1,
+  borderColor: Theme.palette.secondary,
+  },
+  saveBtn: {
+  backgroundColor: Theme.palette.primary,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 32,
+    elevation: 2,
   },
   // Modal styles
   modalOverlay: {
@@ -197,3 +211,5 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
 });
+
+export default EditProfileScreen;

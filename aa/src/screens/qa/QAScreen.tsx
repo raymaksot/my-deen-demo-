@@ -35,7 +35,7 @@ export default function QAScreen() {
 				keyExtractor={(i) => i._id}
 				renderItem={({ item }) => (
 					<TouchableOpacity style={styles.row} onPress={() => navigation.navigate('QADetail', { id: item._id })}>
-						<Text style={{ fontWeight: '700' }}>{item.title}</Text>
+						<Text style={{ fontWeight: 700 }}>{item.title}</Text>
 						<Text numberOfLines={2} style={{ color: '#6b7280' }}>{item.question}</Text>
 					</TouchableOpacity>
 				)}

@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { useThemeColors } from '@/theme/theme';
+import { Theme } from '../../theme/theme';
+import { useThemeColors } from '../../theme/theme';
 
 interface NotificationItem {
   id: string;
@@ -54,23 +55,25 @@ export default function NotificationScreen() {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ fontSize: 20, color: colors.text }}>←</Text>
+          <Text style={[Theme.typography.h4, { color: colors.text }]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notification</Text>
+        <Text style={[Theme.typography.h4, { color: colors.text }]}>Notification</Text>
         <TouchableOpacity onPress={() => {}} style={styles.settingsBtn}>
-          <Text style={{ fontSize: 20, color: colors.text }}>⚙️</Text>
+          {/* TODO: добавить иконку настроек через Theme.elements.Icon */}
+          <Text style={[Theme.typography.h4, { color: colors.text }]}>⚙️</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.sectionLabel}>Today</Text>
+      <Text style={[Theme.typography.label, { color: colors.secondary, marginTop: 16 }]}>Today</Text>
       {notifications.map((item) => (
         <View key={item.id} style={styles.card}>
           <View style={styles.iconCircle}>
-            <Text style={{ fontSize: 20 }}>{item.icon}</Text>
+            {/* TODO: заменить emoji на Theme.elements.Icon */}
+            <Text style={[Theme.typography.h4]}>{item.icon}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardDesc}>{item.description}</Text>
-            {item.link && <Text style={styles.cardLink}>{item.link}</Text>}
+            <Text style={[Theme.typography.h6, { color: colors.text }]}>{item.title}</Text>
+            <Text style={[Theme.typography.paragraph, { color: colors.secondary }]}>{item.description}</Text>
+            {item.link && <Text style={[Theme.typography.label, { color: colors.primary }]}>{item.link}</Text>}
           </View>
         </View>
       ))}
@@ -80,37 +83,41 @@ export default function NotificationScreen() {
 
 // Build a dynamic style sheet based on the current theme colours.  Cards
 // and background colours adjust automatically when switching modes.
-const createStyles = (colors: { [key: string]: string }) =>
-  StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 16 },
+function createStyles(colors: any) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background || '#FFFFFF',
+    },
     headerRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 16,
+      padding: 16,
+      backgroundColor: colors.surface,
     },
-    backBtn: { padding: 4 },
-    settingsBtn: { padding: 4 },
-    headerTitle: { fontSize: 20, fontWeight: '600', color: colors.text },
-    sectionLabel: { fontSize: 14, color: colors.muted, marginBottom: 12 },
+    backBtn: {
+      marginRight: 12,
+    },
+    settingsBtn: {
+      marginLeft: 12,
+    },
     card: {
       flexDirection: 'row',
-      alignItems: 'flex-start',
-      backgroundColor: colors.background === '#0B1220' ? '#1F2937' : '#f9fafb',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
       borderRadius: 12,
       padding: 12,
-      marginBottom: 12,
+      marginHorizontal: 16,
+      marginVertical: 8,
     },
     iconCircle: {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: colors.background === '#0B1220' ? '#374151' : '#e5e7eb',
+      backgroundColor: colors.primary,
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: 12,
     },
-    cardTitle: { fontSize: 16, fontWeight: '600', color: colors.text },
-    cardDesc: { fontSize: 12, color: colors.muted, marginTop: 4 },
-    cardLink: { fontSize: 12, color: colors.primary, marginTop: 4 },
   });
+}

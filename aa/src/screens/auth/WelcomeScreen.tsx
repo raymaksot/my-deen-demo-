@@ -28,7 +28,8 @@ export default function WelcomeScreen() {
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const status = useAppSelector((s) => s.auth.status);
-  const [request, response, promptAsync] = Google.useAuthRequest({ webClientId: ENV.googleWebClientId, androidClientId: Constants.expoConfig.extra.googleAndroidClientId });
+  const androidClientId = Constants.expoConfig?.extra?.googleAndroidClientId ?? '';
+  const [request, response, promptAsync] = Google.useAuthRequest({ webClientId: ENV.googleWebClientId, androidClientId });
   // Access current colour palette based on theme mode.
   const colors = useThemeColors();
   // Choose appropriate onboarding background image depending on light/dark theme.
@@ -59,26 +60,20 @@ export default function WelcomeScreen() {
         <SecondaryButton
           title="Sign Up with Google"
           onPress={() => promptAsync()}
-          style={[
-            styles.socialBtn, 
-            { 
-              borderColor: colors.background === '#0B1220' ? colors.border : '#fff',
-              backgroundColor: 'rgba(255,255,255,0.1)'
-            }
-          ]}
+          style={Object.assign({}, styles.socialBtn, {
+            borderColor: colors.background === '#0B1220' ? colors.border : '#fff',
+            backgroundColor: 'rgba(255,255,255,0.1)'
+          })}
           textStyle={{ color: colors.text }}
         />
         {/* Sign up with Facebook */}
         <SecondaryButton
           title="Sign Up with Facebook"
           onPress={() => {}}
-          style={[
-            styles.socialBtn, 
-            { 
-              borderColor: colors.background === '#0B1220' ? colors.border : '#fff',
-              backgroundColor: 'rgba(255,255,255,0.1)'
-            }
-          ]}
+          style={Object.assign({}, styles.socialBtn, {
+            borderColor: colors.background === '#0B1220' ? colors.border : '#fff',
+            backgroundColor: 'rgba(255,255,255,0.1)'
+          })}
           textStyle={{ color: colors.text }}
         />
         {/* Divider */}
@@ -92,10 +87,7 @@ export default function WelcomeScreen() {
           title="Sign In with Email"
           onPress={() => navigation.navigate('Login')}
           loading={status === 'loading'}
-          style={[
-            styles.primaryBtn,
-            { backgroundColor: colors.primary },
-          ]}
+          style={Object.assign({}, styles.primaryBtn, { backgroundColor: colors.primary })}
         />
       </View>
     </ImageBackground>

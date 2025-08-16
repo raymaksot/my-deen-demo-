@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { CommentDto } from '@/services/commentsService';
+import { CommentDto, ParentType } from '@/services/commentsService';
 import { createComment, deleteComment, fetchComments, toggleLikeComment, updateComment } from '@/store/commentsSlice';
 
 export function CommentsThread(props: { parentType: ParentType; parentId: string; canEdit?: (c: CommentDto) => boolean }) {

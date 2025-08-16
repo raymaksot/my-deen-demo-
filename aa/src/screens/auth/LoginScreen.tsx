@@ -12,13 +12,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { Theme } from '@/theme/theme';
 import { login, googleLogin } from '@/store/authSlice';
 import * as Google from 'expo-auth-session/providers/google';
 import { ENV } from '@/config/env';
 import { useThemeColors } from '@/theme/theme';
 import { PrimaryButton, SecondaryButton, TextInputField } from '@/components/common';
 import Constants from "expo-constants";
-
 export default function LoginScreen() {
   const dispatch = useAppDispatch();
   const status = useAppSelector((s) => s.auth.status);
@@ -26,158 +26,29 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
-  // showToast controls a transient success banner at the bottom of the screen.  It
-  // is separate from the full-screen modal above and more closely resembles
-  // the Figma design that displays a small message with a check icon after
-  // signing in successfully.
   const [showToast, setShowToast] = useState(false);
-  const [request, response, promptAsync] = Google.useAuthRequest({ webClientId: ENV.googleWebClientId, androidClientId: Constants.expoConfig.extra.googleAndroidClientId,});
-
-  // Pull colours from the current theme.  We derive our styles via
-  // a helper below so that they update automatically when the theme
-  // toggles between light and dark.
+  // Проверка на null/undefined для expoConfig и extra
+  const androidClientId = Constants.expoConfig?.extra?.googleAndroidClientId ?? '';
+  const [request, response, promptAsync] = Google.useAuthRequest({ webClientId: ENV.googleWebClientId, androidClientId });
   const colors = useThemeColors();
-
-  // Dynamically create the style sheet based on colours.  Using
-  // useMemo ensures the styles object is only recreated when
-  // `colors` changes (i.e. on theme switch) and not on every re‑render.
   const styles = React.useMemo(() => createStyles(colors), [colors]);
 
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const idToken = response.authentication?.idToken;
-      if (idToken) dispatch(googleLogin(idToken));
-    }
-  }, [response]);
+// ...existing code...
 
-  async function handleLogin() {
-    // Basic validation
-    if (!email.trim() || !password.trim()) return;
-    const result = await dispatch(login({ email, password }));
-    if (result.meta.requestStatus === 'fulfilled') {
-      // Show the transient toast; hide it after a short delay. The modal is also
-      // available as a fallback for a more prominent success indicator.
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-      setShowSuccess(true);
-      // You might navigate to main app automatically once auth token is set by slice
-    }
-  }
-
-  return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        <View style={styles.navRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Text style={[{ fontSize: 18 }, { color: colors.text }]}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.header}>Sign In Account</Text>
-        </View>
-
-        <View style={styles.form}>
-          <TextInputField
-            label="Email"
-            placeholder="Enter your email address"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInputField
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TouchableOpacity onPress={() => { /* TODO: navigate to forgot password */ }}>
-            <Text style={styles.forgot}>Forgot Password?</Text>
-          </TouchableOpacity>
-
-          <PrimaryButton
-            title="Sign in"
-            onPress={handleLogin}
-            disabled={!email || !password}
-            loading={status === 'loading'}
-            style={{ marginTop: 8 }}
-          />
-
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={[{ marginHorizontal: 8 }, { color: colors.muted }]}>Or</Text>
-            <View style={styles.divider} />
-          </View>
-
-          <SecondaryButton 
-            title="Sign Up with Google"
-            onPress={() => promptAsync()}
-            style={{ marginBottom: 12 }}
-          />
-          <SecondaryButton 
-            title="Sign Up with Facebook"
-            onPress={() => {}}
-          />
-
-          <View style={{ marginTop: 16, alignItems: 'center' }}>
-            <Text style={{ color: colors.muted }}>
-              Doesn’t Have an Account?
-              <Text onPress={() => navigation.navigate('Register')} style={styles.link}> Register Now</Text>
-            </Text>
-          </View>
-        </View>
-
-        <Modal visible={showSuccess} transparent animationType="fade">
-          <View style={styles.modalWrap}>
-            <View style={styles.modalCard}>
-              <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 8, color: colors.text }}>Sign In Success</Text>
-              <Text style={{ textAlign: 'center', color: colors.muted, marginBottom: 16 }}>Successfully signed in</Text>
-              <PrimaryButton
-                title="Continue"
-                onPress={() => setShowSuccess(false)}
-              />
-            </View>
-          </View>
-        </Modal>
-
-      {/* Transient toast to indicate sign in success. Positioned at the bottom of the screen and
-          automatically dismissed after a few seconds. */}
-      {showToast && (
-        <View style={styles.toastContainer}>
-          <View style={[styles.toast, { backgroundColor: colors.card }] }>
-            <Text style={[styles.toastIcon, { color: '#10b981' }]}>✓</Text>
-            <Text style={[styles.toastText, { color: colors.text }]}>Successfully signed in</Text>
-          </View>
-        </View>
-      )}
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-}
-
-// Factory to create a StyleSheet with dynamic colours. The returned
-// object mimics the static styles previously defined but derives
-// border, background and text colours from the current theme. Note
-// that numerical values (padding, margin) remain constant.
-const createStyles = (colors: { [key: string]: string }) =>
-  StyleSheet.create({
+type ThemeColors = {
+  background: string;
+  muted: string;
+  border: string;
+  primary: string;
+  card: string;
+  text: string;
+};
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
     scrollContainer: {
       flexGrow: 1,
       padding: 24,
-      backgroundColor: colors.background,
-    },
-    navRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 24,
-    },
-    backBtn: {
-      padding: 4,
-      marginRight: 8,
-    },
-    header: {
-      fontSize: 20,
-      fontWeight: '600',
-      color: colors.text,
+    backgroundColor: colors.background || '#FFFFFF',
     },
     form: {
       width: '100%',
@@ -194,8 +65,6 @@ const createStyles = (colors: { [key: string]: string }) =>
       marginVertical: 16,
     },
     divider: {
-      flex: 1,
-      height: 1,
       backgroundColor: colors.border,
     },
     link: {
@@ -210,7 +79,7 @@ const createStyles = (colors: { [key: string]: string }) =>
       padding: 24,
     },
     modalCard: {
-      backgroundColor: colors.background,
+    backgroundColor: colors.background || '#FFFFFF',
       borderRadius: 12,
       padding: 24,
       width: '100%',
@@ -249,3 +118,111 @@ const createStyles = (colors: { [key: string]: string }) =>
       marginRight: 8,
     },
   });
+}
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const idToken = response.authentication?.idToken;
+      if (idToken) dispatch(googleLogin(idToken));
+    }
+  }, [response]);
+
+  async function handleLogin() {
+    if (!email.trim() || !password.trim()) return;
+    const result = await dispatch(login({ email, password }));
+    if (result.meta.requestStatus === 'fulfilled') {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setShowSuccess(true);
+    }
+  }
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        <View style={styles.form}>
+          {/* Email */}
+          <Theme.elements.Input
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email address"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={{ marginBottom: 12 }}
+            disabled={false}
+          />
+          {/* Password */}
+          <Theme.elements.Input
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            secureTextEntry
+            style={{ marginBottom: 12 }}
+            disabled={false}
+          />
+          <TouchableOpacity onPress={() => { /* TODO: navigate to forgot password */ }}>
+            <Text style={styles.forgot}>Forgot Password?</Text>
+          </TouchableOpacity>
+          {/* Кнопка входа */}
+          <Theme.elements.Button
+            title="Sign In"
+            onPress={handleLogin}
+            style={{ marginTop: 8, opacity: !email || !password ? 0.5 : 1 }}
+            loading={status === 'loading'}
+            disabled={!email || !password}
+          />
+          {/* Кнопки соцсетей */}
+          <Theme.elements.Button
+            title="Sign Up with Google"
+            onPress={() => promptAsync()}
+            variant="dark"
+            style={{ marginBottom: 12 }}
+            loading={false}
+            disabled={false}
+          />
+          <Theme.elements.Button
+            title="Sign Up with Facebook"
+            onPress={() => {}}
+            variant="dark"
+            style={{ marginBottom: 12 }}
+            loading={false}
+            disabled={false}
+          />
+          <View style={styles.dividerRow}>
+            <View style={styles.divider} />
+            <Text style={[{ marginHorizontal: 8 }, { color: colors.muted }]}>Or</Text>
+            <View style={styles.divider} />
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 16 }}>
+            <Text style={{ color: colors.text }}>Doesn’t have an account?</Text>
+            <Text onPress={() => navigation.navigate('Register')} style={styles.link}> Register Now</Text>
+          </View>
+        </View>
+
+        <Modal visible={showSuccess} transparent animationType="fade">
+          <View style={styles.modalWrap}>
+            <View style={styles.modalCard}>
+              <Text style={[Theme.typography.h5, { color: colors.text }]}>Sign In Success</Text>
+              <Text style={[Theme.typography.paragraph, { color: colors.text }]}>Successfully signed in</Text>
+              <PrimaryButton
+                title="Continue"
+                onPress={() => setShowSuccess(false)}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        {/* Transient toast to indicate sign in success. Positioned at the bottom of the screen and
+            automatically dismissed after a few seconds. */}
+        {showToast && (
+          <View style={styles.toastContainer}>
+            <View style={[styles.toast, { backgroundColor: colors.card }] }>
+              <Text style={[styles.toastIcon, { color: '#10b981' }]}>✓</Text>
+              <Text style={[styles.toastText, { color: colors.text }]}>Successfully signed in</Text>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
