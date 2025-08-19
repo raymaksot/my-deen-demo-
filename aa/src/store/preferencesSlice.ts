@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ThemeMode = 'light' | 'dark';
 export type FontSize = 'small' | 'medium' | 'large';
@@ -61,8 +62,35 @@ const preferencesSlice = createSlice({
 		setPrayerPreferences(state, action: PayloadAction<PrayerPreferences>) {
 			state.prayer = action.payload;
 		},
+		hydrate(state, action: PayloadAction<Partial<PreferencesState>>) {
+			return { ...state, ...action.payload };
+		},
 	},
 });
 
-export const { setThemeMode, setLocale, setFontSize, setHighContrast, setPrayerPreferences } = preferencesSlice.actions;
+export const { setThemeMode, setLocale, setFontSize, setHighContrast, setPrayerPreferences, hydrate } = preferencesSlice.actions;
+
+// Storage utilities for persisting preferences
+const PREFERENCES_STORAGE_KEY = '@mydeen/preferences';
+
+export const loadPreferencesFromStorage = async (): Promise<Partial<PreferencesState>> => {
+	try {
+		const saved = await AsyncStorage.getItem(PREFERENCES_STORAGE_KEY);
+		if (saved) {
+			return JSON.parse(saved);
+		}
+	} catch (error) {
+		console.warn('Failed to load preferences from storage:', error);
+	}
+	return {};
+};
+
+export const savePreferencesToStorage = async (preferences: PreferencesState): Promise<void> => {
+	try {
+		await AsyncStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
+	} catch (error) {
+		console.warn('Failed to save preferences to storage:', error);
+	}
+};
+
 export default preferencesSlice.reducer;
