@@ -1,1 +1,0 @@
-// No changes required. See SettingsScreen.tsx for updated preferences UI.
