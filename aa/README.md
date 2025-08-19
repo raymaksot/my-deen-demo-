@@ -12,8 +12,15 @@ Configuration:
 - Set `EXPO_PUBLIC_API_BASE_URL` in `.env` pointing to backend (default `http://10.0.2.2:3000` for Android emulator)
 
 Running:
-- Install deps: `npm install`
+- Install deps: `npm install --legacy-peer-deps`
 - Start: `npx expo start`
+
+## 📚 Documentation
+
+- [Android Quick Start](ANDROID_QUICK_START.md) - Quick setup checklist for Android development
+- [Android Device Setup & Debug Guide](docs/ANDROID_DEVICE_SETUP.md) - Complete guide for testing and debugging on Android devices
+- [iOS Deployment Changes](IOS_DEPLOYMENT_CHANGES.md) - iOS-specific deployment configuration
+- [NetInfo Integration](docs/NetInfo_Integration.md) - Network connectivity monitoring
 
 Notes:
 - Comments UI is reusable component at `src/components/CommentsThread.tsx`
