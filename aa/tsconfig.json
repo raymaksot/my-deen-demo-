@@ -6,7 +6,7 @@
     ],
     "jsx": "react-jsx",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true,
@@ -31,6 +31,9 @@
       ],
       "@/models/*": [
         "src/models/*"
+      ],
+      "@/store": [
+        "src/store"
       ],
       "@/store/*": [
         "src/store/*"

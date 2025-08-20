@@ -2,14 +2,14 @@ import Theme, { useThemeConfig } from '../../theme/theme';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import React, { useState } from 'react';
 
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type QiblaStackParamList = {
   FindQibla: undefined;
 };
 
 interface Props {
-  navigation: StackNavigationProp<QiblaStackParamList, 'FindQibla'>;
+  navigation: NativeStackNavigationProp<QiblaStackParamList, 'FindQibla'>;
 }
 
 const FindQiblaScreen: React.FC<Props> = ({ navigation }) => {

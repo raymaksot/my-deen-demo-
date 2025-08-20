@@ -1,1 +1,0 @@
-// See SettingsScreen.tsx for the primary settings UI implementation including notifications and accessibility.

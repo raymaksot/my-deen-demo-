@@ -48,7 +48,7 @@ export async function schedulePrayerNotifications(times: PrayerTimesResponse, pr
 		if (!when) continue;
 		await Notifications.scheduleNotificationAsync({
 			content: { title: `Athan - ${name}`, body: `${name} time has arrived` },
-			trigger: when,
+			trigger: { date: when, type: Notifications.SchedulableTriggerInputTypes.DATE },
 		});
 	}
 }
@@ -96,7 +96,7 @@ export async function scheduleDailyContentNotification() {
 				body: notificationBody,
 				data: { type: 'daily-content' },
 			},
-			trigger: tomorrow.toDate(),
+			trigger: { date: tomorrow.toDate(), type: Notifications.SchedulableTriggerInputTypes.DATE },
 		});
 		
 		console.log('Daily content notification scheduled for:', tomorrow.format('YYYY-MM-DD HH:mm'));
